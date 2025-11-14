@@ -1,67 +1,85 @@
-# laravel-iran-bank
-BankAccountValidator (Laravel Service)
+# BankAccountValidator (Laravel Service)
 
-The BankAccountValidator class is a lightweight and practical service for validating Iranian banking information in PHP/Laravel projects. It provides a set of methods to validate card numbers, account numbers, IBANs (Sheba), and to identify the bank from a card or IBAN.
+The **BankAccountValidator** class is a lightweight service for **validating Iranian banking information** in PHP/Laravel projects. It provides methods to validate **card numbers, account numbers, IBANs (Sheba)**, and identify the bank from a card or IBAN.
 
-Features
-✔️ Card Number Validation
+## Features
 
-Sanitizes input by removing non-digit characters
+- **Card Number Validation:** Supports 13–19 digit cards, uses **Luhn algorithm**.
+- **Account Number Validation:** Supports 8–18 digit account numbers.
+- **IBAN/Sheba Validation:** Checks Iranian IBAN format (`IRxxxxxxxxxxxxxxxxxxxxxxxx`), uses **BCMOD** for checksum.
+- **Bank Identification:** Detects bank from card BIN or IBAN code.
+- **Full Iranian Sheba Validation:** Validates IBAN, optional card, optional account, ensures card and IBAN match the same bank.
 
-Supports card numbers from 13 to 19 digits
+## Installation
 
-Uses the Luhn algorithm to verify card validity
+1. Clone the repository:
 
-✔️ Account Number Validation
+git clone git@github.com:Hesamabbasnezhad/laravel-iran-bank.git
 
-Validates account numbers between 8 to 18 digits
+2. Copy the class into your Laravel project, for example:
+   
+app/Services/BankAccountValidator.php
 
-Useful for basic checks before integrating with banking services
+3. Configuration
+Create a config file config/banks.php in your Laravel project:
 
-✔️ IBAN/Sheba Validation
+<?php
 
-Supports standard IRxxxxxxxxxxxxxxxxxxxxxxxx format
+return [
 
-Rearranges the first 4 characters and converts letters to numbers
+    'bank_cards' => [
+        [
+            'bank_name' => 'Melli Bank',
+            'card_no'  => '603799',
+            'nickname' => 'Melli'
+        ],
+        [
+            'bank_name' => 'Tejarat Bank',
+            'card_no'  => '627412',
+            'nickname' => 'Tejarat'
+        ],
+        // Add more banks as needed
+    ],
 
-Uses BCMOD to calculate the IBAN checksum
+    'iban_banks' => [
+        '017' => [
+            'bank_name' => 'Melli Bank',
+            'nickname'  => 'Melli',
+        ],
+        '004' => [
+            'bank_name' => 'Tejarat Bank',
+            'nickname'  => 'Tejarat',
+        ],
+        // Add more banks as needed
+    ],
 
-Requires the PHP extension ext-bcmath
+];
 
-✔️ Bank Identification by Card Number
+Usage : 
 
-Retrieves bank information from the config/banks.php file
+use App\Services\BankAccountValidator;
 
-Detects the bank based on the card BIN (first 6 digits)
+// Validate a card
+$isValidCard = BankAccountValidator::validateCardNumber('6037991234567890');
 
-✔️ Bank Identification by IBAN
+// Validate an IBAN
+$isValidIBAN = BankAccountValidator::validateIBAN('IR820540102680020817909002');
 
-Extracts bank code from the BBAN section of the IBAN
+// Full validation with optional card and account
+$isValid = BankAccountValidator::validateIranianSheba(
+    'IR820540102680020817909002',
+    '6037991234567890',
+    '1234567890'
+);
 
-Maps bank code to bank information using configuration
+// Get bank info
+$bankFromCard = BankAccountValidator::getBankFromCard('6037991234567890');
+$bankFromIBAN = BankAccountValidator::getBankFromIBAN('IR820540102680020817909002');
 
-✔️ Full Iranian Sheba Validation (validateIranianSheba)
+Requirements : 
 
-This method performs a complete validation:
+. PHP >= 7.4
 
-Checks IBAN validity
+. ext-bcmath enabled (required for IBAN validation)
 
-Checks card number validity if provided
-
-Checks account number validity if provided
-
-Verifies that the account number matches the BBAN portion
-
-Ensures that the card and IBAN belong to the same bank
-
-Configuration
-
-The service relies on a config/banks.php file containing:
-
-bank_cards → bank info based on card numbers
-
-iban_banks → bank info based on IBAN codes
-
-Use Cases
-
-This service is ideal for banking, finance, payment gateways, wallet systems, user bank verification, and more.
+. Laravel 8/9/10/11
