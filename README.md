@@ -15,14 +15,12 @@ The **BankAccountValidator** class is a lightweight service for validating Irani
 git clone git@github.com:Hesamabbasnezhad/laravel-iran-bank.git
 Copy the class into your Laravel project:
 
-swift
-Copy code
+
+
 app/Services/BankAccountValidator.php
 Configuration
 Create a config file config/banks.php in your Laravel project:
 
-php
-Copy code
 <?php
 
 return [
@@ -56,12 +54,9 @@ return [
 ];
 Alternatively, you can include a sample file banks.php.example in the repo and copy it:
 
-bash
-Copy code
 cp banks.php.example config/banks.php
+
 Usage
-php
-Copy code
 use App\Services\BankAccountValidator;
 
 // Validate a card
@@ -87,5 +82,3 @@ ext-bcmath enabled (required for IBAN validation)
 
 Laravel 8/9/10/11
 
-yaml
-Copy code
